@@ -1,5 +1,4 @@
-<?php
-/*
+{*
  +--------------------------------------------------------------------+
  | CiviCRM version 4.6                                                |
  +--------------------------------------------------------------------+
@@ -23,47 +22,12 @@
  | GNU Affero General Public License or the licensing of CiviCRM,     |
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
- */
-
-/**
- * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2015
- * $Id$
- */
-
-session_start();
-
-require_once '../civicrm.config.php';
-$config = CRM_Core_Config::singleton();
-
-// Log all IPN transactions - from Eileen
-$logTableExists = FALSE;
-$checkTable = "SHOW TABLES LIKE 'civicrm_notification_log'";
-$dao = CRM_Core_DAO::executeQuery($checkTable);
-if(!$dao->N) {
-  CRM_Core_DAO::executeQuery("CREATE TABLE IF NOT EXISTS `civicrm_notification_log` (
-`id` INT(10) NOT NULL AUTO_INCREMENT,
-`timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-`message_type` VARCHAR(255) NULL DEFAULT NULL,
-`message_raw` LONGTEXT NULL,
-PRIMARY KEY (`id`)
-)");
-}
-$msgType = 'authorize.net';
-$dao = CRM_Core_DAO::executeQuery("INSERT INTO civicrm_notification_log (message_raw, message_type) VALUES (%1, %2)",
-  array(1 => array(json_encode($_REQUEST), 'String'), 2 => array($msgType, 'String'))
-);
-
-$log = new CRM_Utils_SystemLogger();
-$log->alert('payment_notification processor_name=AuthNet', $_REQUEST);
-
-$authorizeNetIPN = new CRM_Core_Payment_AuthorizeNetIPN($_REQUEST);
-try {
-  $authorizeNetIPN->main();
-}
-catch (CRM_Core_Exception $e) {
-  CRM_Core_Error::debug_log_message($e->getMessage());
-  CRM_Core_Error::debug_var('error data', $e->getErrorData(), TRUE, TRUE);
-  CRM_Core_Error::debug_var('REQUEST', $_REQUEST, TRUE, TRUE);
-  echo "The transaction has failed. Please review the log for more detail";
-}
+*}
+<div id="did-you-know" style="font-size: 12px; text-align: justify;">
+{$message.text}<br>
+{if $message.link}
+<a href="{$message.link}">Learn more ...</a>
+{else}
+<a href="mailto:info@cividesk.com?subject=Cividesk%20Customer%20Question">Ask us how ...</a>
+{/if}
+</div>

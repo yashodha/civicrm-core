@@ -1327,6 +1327,19 @@ INSERT INTO {$componentTable} SELECT distinct gc.contact_id FROM civicrm_group_c
       $fieldName = 'civicrm_primary_id';
     }
 
+    // relationship custom field
+    if (strpos($field,'_a_b-custom') !== false) {
+      $customField = explode('a_b-', $field);
+      if (!empty($customField) && !empty($customField['1'])) {
+        $field = $customField['1'];
+      }
+    } elseif (strpos($field,'_b_a-custom') !== false) {
+      $customField = explode('b_a-', $field);
+      if (!empty($customField) && !empty($customField['1'])) {
+        $field = $customField['1'];
+      }
+    }
+    
     // early exit for master_id, CRM-12100
     // in the DB it is an ID, but in the export, we retrive the display_name of the master record
     // also for current_employer, CRM-16939
@@ -1360,7 +1373,7 @@ INSERT INTO {$componentTable} SELECT distinct gc.contact_id FROM civicrm_group_c
             $sqlColumns[$fieldName] = "$fieldName varchar({$query->_fields[$field]['maxlength']})";
           }
           else {
-            $sqlColumns[$fieldName] = "$fieldName varchar(64)";
+            $sqlColumns[$fieldName] = "$fieldName varchar(128)";
           }
           break;
 
@@ -1435,12 +1448,12 @@ INSERT INTO {$componentTable} SELECT distinct gc.contact_id FROM civicrm_group_c
                 break;
 
               default:
-                $sqlColumns[$fieldName] = "$fieldName varchar(64)";
+                $sqlColumns[$fieldName] = "$fieldName varchar(128)";
                 break;
             }
           }
           else {
-            $sqlColumns[$fieldName] = "$fieldName varchar(64)";
+            $sqlColumns[$fieldName] = "$fieldName varchar(128)";
           }
         }
       }

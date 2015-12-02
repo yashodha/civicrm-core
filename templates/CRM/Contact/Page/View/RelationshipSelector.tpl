@@ -31,8 +31,8 @@
     <tr>
       <th class='crm-contact-relationship-type'>{ts}Relationship{/ts}</th>
       <th class='crm-contact-relationship-contact_name'>&nbsp;</th>
-      <th class='crm-contact-relationship-start_date'>{ts}Start{/ts}</th>
-      <th class='crm-contact-relationship-end_date'>{ts}End{/ts}</th>
+      <th class='crm-contact-relationship-start_date'>{ts}Since{/ts}</th>
+      <th class='crm-contact-relationship-job_title'>{ts}Position{/ts}</th>
       <th class='crm-contact-relationship-city'>{ts}City{/ts}</th>
       <th class='crm-contact-relationship-state'>{ts}State/Prov{/ts}</th>
       <th class='crm-contact-relationship-email'>{ts}Email{/ts}</th>
@@ -71,7 +71,7 @@
           {sClass: 'crm-contact-relationship-type'},
           {sClass: 'crm-contact-relationship-contact_name'},
           {sClass: 'crm-contact-relationship-start_date'},
-          {sClass: 'crm-contact-relationship-end_date'},
+          {sClass: 'crm-contact-relationship-job_title'},
           {sClass: 'crm-contact-relationship-city'},
           {sClass: 'crm-contact-relationship-state'},
           {sClass: 'crm-contact-relationship-email'},

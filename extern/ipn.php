@@ -38,6 +38,26 @@ require_once '../civicrm.config.php';
 /* Cache the real UF, override it with the SOAP environment */
 
 $config = CRM_Core_Config::singleton();
+
+// Log all IPN transactions - from Eileen
+$logTableExists = FALSE;
+$checkTable = "SHOW TABLES LIKE 'civicrm_notification_log'";
+$dao = CRM_Core_DAO::executeQuery($checkTable);
+if(!$dao->N) {
+  CRM_Core_DAO::executeQuery("
+CREATE TABLE IF NOT EXISTS `civicrm_notification_log` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `message_type` VARCHAR(255) NULL DEFAULT NULL,
+  `message_raw` LONGTEXT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+}
+$msgType = (empty($_GET) ? 'paypalpro-ipn' : 'paypal-ipn');
+$dao = CRM_Core_DAO::executeQuery("INSERT INTO civicrm_notification_log (message_raw, message_type) VALUES (%1, %2)",
+  array(1 => array(json_encode($_REQUEST), 'String'), 2 => array($msgType, 'String'))
+);
+
 $log = new CRM_Utils_SystemLogger();
 if (empty($_GET)) {
   $log->alert('payment_notification processor_name=PayPal', $_REQUEST);
