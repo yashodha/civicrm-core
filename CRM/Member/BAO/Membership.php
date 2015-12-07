@@ -1229,7 +1229,7 @@ INNER JOIN  civicrm_contact contact_a ON ( contact_a.id = membership.contact_id 
     return (int) $memberCount;
   }
 
-  function getAclClause() {
+  public static function getAclClause() {
     if (! self::$_aclCache ) { 
       $acl=  new CRM_Contact_BAO_Query();
       $acl->generatePermissionClause(false, true);
