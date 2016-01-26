@@ -2031,7 +2031,8 @@ AND cc.sort_name LIKE '%$name%'";
         }
 
         $contactRelationships[$relationshipId]['start_date'] = CRM_Utils_Date::customFormat($values['start_date']);
-        $contactRelationships[$relationshipId]['end_date'] = CRM_Utils_Date::customFormat($values['end_date']);
+        //$contactRelationships[$relationshipId]['end_date'] = CRM_Utils_Date::customFormat($values['end_date']);
+        $contactRelationships[$relationshipId]['job_title'] = $values['job_title'];
         $contactRelationships[$relationshipId]['city'] = $values['city'];
         $contactRelationships[$relationshipId]['state'] = $values['state'];
         $contactRelationships[$relationshipId]['email'] = $values['email'];
