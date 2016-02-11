@@ -57,9 +57,10 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'name' => 'sort_name',
             'required' => TRUE,
           ),
-          'id' => array(
+          'id_a' => array(
             'no_display' => TRUE,
             'required' => TRUE,
+            'name' => 'id',
           ),
           'contact_type_a' => array(
             'title' => ts('Contact Type (Contact A)'),
@@ -96,9 +97,10 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'name' => 'sort_name',
             'required' => TRUE,
           ),
-          'id' => array(
+          'id_b' => array(
             'no_display' => TRUE,
             'required' => TRUE,
+            'name' => 'id',
           ),
           'contact_type_b' => array(
             'title' => ts('Contact Type (Contact B)'),
@@ -251,19 +253,92 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
       ),
       'civicrm_address' => array(
         'dao' => 'CRM_Core_DAO_Address',
+        'fields' => array(
+          'city_a' => array(
+            'title' => ts('City (Contact A)'),
+            'name' => 'city',
+          ),
+          'postal_code_a' => array(
+            'title' => ts('Zip (Contact A)'),
+            'name' => 'postal_code',
+          ),
+          'state_province_id_a' => array(
+            'title' => ts('State/Province (Contact A)'),
+            'name' => 'state_province_id',
+          ),
+          'country_id_a' => array(
+            'title' => ts('Country (Contact A)'),
+            'name' => 'country_id',
+          ),
+        ),
         'filters' => array(
-          'country_id' => array(
-            'title' => ts('Country'),
+          'country_id_a' => array(
+            'title' => ts('Country (Contact A)'),
+            'name' => 'country_id',
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::country(),
           ),
-          'state_province_id' => array(
-            'title' => ts('State/Province'),
+          'state_province_id_a' => array(
+            'title' => ts('State/Province (Contact A)'),
+            'name' => 'state_province_id',
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Core_PseudoConstant::stateProvince(),
           ),
         ),
-        'grouping' => 'contact-fields',
+        'grouping' => 'contact_a_fields',
+      ),
+      'civicrm_address_b' => array(
+        'dao' => 'CRM_Core_DAO_Address',
+        'alias' => 'address_b',
+        'fields' => array(
+          'city_b' => array(
+            'title' => ts('City (Contact B)'),
+            'name' => 'city',
+          ),
+          'postal_code_b' => array(
+            'title' => ts('Zip (Contact B)'),
+            'name' => 'postal_code',
+          ),
+          'state_province_id_b' => array(
+            'title' => ts('State/Province (Contact B)'),
+            'name' => 'state_province_id',
+          ),
+          'country_id_b' => array(
+            'title' => ts('Country (Contact B)'),
+            'name' => 'country_id',
+          ),
+        ),
+        'filters' => array(
+          'country_id_b' => array(
+            'title' => ts('Country (Contact B)'),
+            'name' => 'country_id',
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::country(),
+          ),
+          'state_province_id_b' => array(
+            'title' => ts('State/Province (Contact B)'),
+            'name' => 'state_province_id',
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::stateProvince(),
+          ),
+        ),
+        'grouping' => 'contact_b_fields',
+      ),
+      'civicrm_note' => array(
+        'dao' => 'CRM_Core_DAO_Note',
+        'fields' => array(
+          'note' => array(
+            'title' => ts('Relationship Note'),
+          ),
+        ),
+        'filters' => array(
+          'note' => array(
+            'title' => ts('Relationship Note'),
+            'operator' => 'like',
+            'type' => CRM_Report_Form::OP_STRING,
+          ),
+        ),
+        'grouping' => 'relation-fields',
       ),
     );
 
@@ -322,16 +397,20 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
              {$this->_aclFrom} ";
 
-    if (!empty($this->_params['country_id_value']) ||
-      !empty($this->_params['state_province_id_value'])
-    ) {
+    if ($this->isTableSelected('civicrm_address')) {
       $this->_from .= "
             INNER  JOIN civicrm_address {$this->_aliases['civicrm_address']}
-                         ON (( {$this->_aliases['civicrm_address']}.contact_id =
-                               {$this->_aliases['civicrm_contact']}.id  OR
-                               {$this->_aliases['civicrm_address']}.contact_id =
-                               {$this->_aliases['civicrm_contact_b']}.id ) AND
+                         ON ( {$this->_aliases['civicrm_address']}.contact_id =
+                               {$this->_aliases['civicrm_contact']}.id  AND
                                {$this->_aliases['civicrm_address']}.is_primary = 1 ) ";
+    }
+
+    if ($this->isTableSelected('civicrm_address_b')) {
+      $this->_from .= "
+            INNER  JOIN civicrm_address {$this->_aliases['civicrm_address_b']}
+                         ON ( {$this->_aliases['civicrm_address_b']}.contact_id =
+                               {$this->_aliases['civicrm_contact_b']}.id AND
+                               {$this->_aliases['civicrm_address_b']}.is_primary = 1 ) ";
     }
 
     $this->_from .= "
@@ -339,6 +418,13 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
                         ON ( {$this->_aliases['civicrm_relationship']}.relationship_type_id  =
                              {$this->_aliases['civicrm_relationship_type']}.id  ) ";
 
+    if ($this->isTableSelected('civicrm_note')) {
+      $this->_from .= "
+            LEFT JOIN civicrm_note {$this->_aliases['civicrm_note']}
+                         ON ( {$this->_aliases['civicrm_note']}.entity_id =
+                               {$this->_aliases['civicrm_relationship']}.id  AND
+                               {$this->_aliases['civicrm_note']}.entity_table = 'civicrm_relationship' )";
+    }
     // include Email Field
     if ($this->_emailField_a) {
       $this->_from .= "
@@ -588,16 +674,29 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
     foreach ($rows as $rowNum => $row) {
 
       // handle country
-      if (array_key_exists('civicrm_address_country_id', $row)) {
-        if ($value = $row['civicrm_address_country_id']) {
-          $rows[$rowNum]['civicrm_address_country_id'] = CRM_Core_PseudoConstant::country($value, FALSE);
+      if (array_key_exists('civicrm_address_country_id_a', $row)) {
+        if ($value = $row['civicrm_address_country_id_a']) {
+          $rows[$rowNum]['civicrm_address_country_id_a'] = CRM_Core_PseudoConstant::country($value, FALSE);
+        }
+        $entryFound = TRUE;
+      }
+      if (array_key_exists('civicrm_address_b_country_id_b', $row)) {
+        if ($value = $row['civicrm_address_b_country_id_b']) {
+          $rows[$rowNum]['civicrm_address_b_country_id_b'] = CRM_Core_PseudoConstant::country($value, FALSE);
         }
         $entryFound = TRUE;
       }
 
-      if (array_key_exists('civicrm_address_state_province_id', $row)) {
-        if ($value = $row['civicrm_address_state_province_id']) {
-          $rows[$rowNum]['civicrm_address_state_province_id'] = CRM_Core_PseudoConstant::stateProvince($value, FALSE);
+      if (array_key_exists('civicrm_address_state_province_id_a', $row)) {
+        if ($value = $row['civicrm_address_state_province_id_a']) {
+          $rows[$rowNum]['civicrm_address_state_province_id_a'] = CRM_Core_PseudoConstant::stateProvince($value, FALSE);
+        }
+        $entryFound = TRUE;
+      }
+
+      if (array_key_exists('civicrm_address_b_state_province_id_b', $row)) {
+        if ($value = $row['civicrm_address_b_state_province_id_b']) {
+          $rows[$rowNum]['civicrm_address_b_state_province_id_b'] = CRM_Core_PseudoConstant::stateProvince($value, FALSE);
         }
         $entryFound = TRUE;
       }
