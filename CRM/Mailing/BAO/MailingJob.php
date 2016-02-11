@@ -571,10 +571,10 @@ VALUES (%1, %2, %3, %4, %5, %6, %7)
       // if ( ( $mailsProcessed % 100 ) == 0 ) {
       // CRM_Utils_System::xMemory( "$mailsProcessed: " );
       // }
-
+      $mailerBatchLimit = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME, 'mailerBatchLimit');
       if (
-        $config->mailerBatchLimit > 0 &&
-        self::$mailsProcessed >= $config->mailerBatchLimit
+        $mailerBatchLimit > 0 &&
+        self::$mailsProcessed >= $mailerBatchLimit
       ) {
         if (!empty($fields)) {
           $this->deliverGroup($fields, $mailing, $mailer, $job_date, $attachments);
@@ -799,8 +799,9 @@ VALUES (%1, %2, %3, %4, %5, %6, %7)
       }
 
       // If we have enabled the Throttle option, this is the time to enforce it.
-      if (isset($config->mailThrottleTime) && $config->mailThrottleTime > 0) {
-        usleep((int ) $config->mailThrottleTime);
+      $mailThrottleTime = CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::MAILING_PREFERENCES_NAME, 'mailThrottleTime');
+      if (isset($mailThrottleTime) && $mailThrottleTime > 0) {
+        usleep((int ) $mailThrottleTime);
       }
     }
 
