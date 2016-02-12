@@ -71,6 +71,11 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'title' => ts('Contact Subtype (Contact A)'),
             'name' => 'contact_sub_type',
           ),
+          'exposed_id' => array(
+            'name' => 'id',
+            'title' => 'Contact ID (Contact A)',
+            'no_repeat' => TRUE,
+          ),
         ),
         'filters' => array(
           'sort_name_a' => array(
@@ -97,7 +102,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'name' => 'email',
           ),
         ),
-        'grouping' => 'contact_a_fields_2',
+        'grouping' => 'contact_a_fields',
       ),
       'civicrm_phone' => array(
         'dao' => 'CRM_Core_DAO_Phone',
@@ -112,7 +117,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'name' => 'phone_ext',
           ),
         ),
-        'grouping' => 'contact_a_fields_2',
+        'grouping' => 'contact_a_fields',
       ),
       'civicrm_address' => array(
         'dao' => 'CRM_Core_DAO_Address',
@@ -148,7 +153,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'options' => CRM_Core_PseudoConstant::stateProvince(),
           ),
         ),
-        'grouping' => 'contact_a_fields_3',
+        'grouping' => 'contact_a_fields',
       ),
       'civicrm_contact_b' => array(
         'dao' => 'CRM_Contact_DAO_Contact',
@@ -171,6 +176,11 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           'contact_sub_type_b' => array(
             'title' => ts('Contact Subtype (Contact B)'),
             'name' => 'contact_sub_type',
+          ),
+          'exposed_id_b' => array(
+            'name' => 'id',
+            'title' => 'Contact ID (Contact B)',
+            'no_repeat' => TRUE,
           ),
         ),
         'filters' => array(
@@ -199,7 +209,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'name' => 'email',
           ),
         ),
-        'grouping' => 'contact_b_fields_2',
+        'grouping' => 'contact_b_fields',
       ),
       'civicrm_phone_b' => array(
         'dao' => 'CRM_Core_DAO_Phone',
@@ -214,7 +224,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'name' => 'phone_ext',
           ),
         ),
-        'grouping' => 'contact_b_fields_2',
+        'grouping' => 'contact_b_fields',
       ),
       'civicrm_address_b' => array(
         'dao' => 'CRM_Core_DAO_Address',
@@ -251,7 +261,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'options' => CRM_Core_PseudoConstant::stateProvince(),
           ),
         ),
-        'grouping' => 'contact_b_fields_3',
+        'grouping' => 'contact_b_fields',
       ),
       'civicrm_relationship_type' => array(
         'dao' => 'CRM_Contact_DAO_RelationshipType',
@@ -277,7 +287,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'title' => ts('Relationship End Date'),
           ),
           'description' => array(
-            'title' => ts('Description'),
+            'title' => ts('Relationship Description'),
           ),
           'relationship_id' => array(
             'title' => ts('Relationship ID'),
@@ -285,6 +295,15 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
           ),
         ),
         'filters' => array(
+          'relationship_type_id' => array(
+            'title' => ts('Relationship Type'),
+            'operatorType' => CRM_Report_Form::OP_SELECT,
+            'options' => array(
+                '' => '- any relationship type -',
+              ) +
+              CRM_Contact_BAO_Relationship::getContactRelationshipType(NULL, 'null', NULL, NULL, TRUE),
+            'type' => CRM_Utils_Type::T_INT,
+          ),
           'is_active' => array(
             'title' => ts('Relationship Status'),
             'operatorType' => CRM_Report_Form::OP_SELECT,
@@ -305,21 +324,12 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             ),
             'type' => CRM_Utils_Type::T_INT,
           ),
-          'relationship_type_id' => array(
-            'title' => ts('Relationship'),
-            'operatorType' => CRM_Report_Form::OP_SELECT,
-            'options' => array(
-              '' => '- any relationship type -',
-            ) +
-            CRM_Contact_BAO_Relationship::getContactRelationshipType(NULL, 'null', NULL, NULL, TRUE),
-            'type' => CRM_Utils_Type::T_INT,
-          ),
           'start_date' => array(
-            'title' => ts('Start Date'),
+            'title' => ts('Relationship Start Date'),
             'type' => CRM_Utils_Type::T_DATE,
           ),
           'end_date' => array(
-            'title' => ts('End Date'),
+            'title' => ts('Relationship End Date'),
             'type' => CRM_Utils_Type::T_DATE,
           ),
         ),
