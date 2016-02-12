@@ -147,7 +147,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'name' => 'email',
           ),
         ),
-        'grouping' => 'contact_b_fields',
+        'grouping' => 'contact_b_fields2',
       ),
       'civicrm_phone' => array(
         'dao' => 'CRM_Core_DAO_Phone',
@@ -177,79 +177,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'name' => 'phone_ext',
           ),
         ),
-        'grouping' => 'contact_b_fields',
-      ),
-      'civicrm_relationship_type' => array(
-        'dao' => 'CRM_Contact_DAO_RelationshipType',
-        'fields' => array(
-          'label_a_b' => array(
-            'title' => ts('Relationship A-B '),
-            'default' => TRUE,
-          ),
-          'label_b_a' => array(
-            'title' => ts('Relationship B-A '),
-            'default' => TRUE,
-          ),
-        ),
-        'grouping' => 'relation-fields',
-      ),
-      'civicrm_relationship' => array(
-        'dao' => 'CRM_Contact_DAO_Relationship',
-        'fields' => array(
-          'start_date' => array(
-            'title' => ts('Relationship Start Date'),
-          ),
-          'end_date' => array(
-            'title' => ts('Relationship End Date'),
-          ),
-          'description' => array(
-            'title' => ts('Description'),
-          ),
-          'relationship_id' => array(
-            'title' => ts('Rel ID'),
-            'name' => 'id',
-          ),
-        ),
-        'filters' => array(
-          'is_active' => array(
-            'title' => ts('Relationship Status'),
-            'operatorType' => CRM_Report_Form::OP_SELECT,
-            'options' => array(
-              '' => '- Any -',
-              1 => 'Active',
-              0 => 'Inactive',
-            ),
-            'type' => CRM_Utils_Type::T_INT,
-          ),
-          'is_valid' => array(
-            'title' => ts('Relationship Dates Validity'),
-            'operatorType' => CRM_Report_Form::OP_SELECT,
-            'options' => array(
-              NULL => ts('- Any -'),
-              1 => ts('Not expired'),
-              0 => ts('Expired'),
-            ),
-            'type' => CRM_Utils_Type::T_INT,
-          ),
-          'relationship_type_id' => array(
-            'title' => ts('Relationship'),
-            'operatorType' => CRM_Report_Form::OP_SELECT,
-            'options' => array(
-              '' => '- any relationship type -',
-            ) +
-            CRM_Contact_BAO_Relationship::getContactRelationshipType(NULL, 'null', NULL, NULL, TRUE),
-            'type' => CRM_Utils_Type::T_INT,
-          ),
-          'start_date' => array(
-            'title' => ts('Start Date'),
-            'type' => CRM_Utils_Type::T_DATE,
-          ),
-          'end_date' => array(
-            'title' => ts('End Date'),
-            'type' => CRM_Utils_Type::T_DATE,
-          ),
-        ),
-        'grouping' => 'relation-fields',
+        'grouping' => 'contact_b_fields2',
       ),
       'civicrm_address' => array(
         'dao' => 'CRM_Core_DAO_Address',
@@ -322,7 +250,79 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'options' => CRM_Core_PseudoConstant::stateProvince(),
           ),
         ),
-        'grouping' => 'contact_b_fields',
+        'grouping' => 'contact_b_fields2',
+      ),
+      'civicrm_relationship_type' => array(
+        'dao' => 'CRM_Contact_DAO_RelationshipType',
+        'fields' => array(
+          'label_a_b' => array(
+            'title' => ts('Relationship A-B '),
+            'default' => TRUE,
+          ),
+          'label_b_a' => array(
+            'title' => ts('Relationship B-A '),
+            'default' => TRUE,
+          ),
+        ),
+        'grouping' => 'relation-fields',
+      ),
+      'civicrm_relationship' => array(
+        'dao' => 'CRM_Contact_DAO_Relationship',
+        'fields' => array(
+          'start_date' => array(
+            'title' => ts('Relationship Start Date'),
+          ),
+          'end_date' => array(
+            'title' => ts('Relationship End Date'),
+          ),
+          'description' => array(
+            'title' => ts('Description'),
+          ),
+          'relationship_id' => array(
+            'title' => ts('Relationship ID'),
+            'name' => 'id',
+          ),
+        ),
+        'filters' => array(
+          'is_active' => array(
+            'title' => ts('Relationship Status'),
+            'operatorType' => CRM_Report_Form::OP_SELECT,
+            'options' => array(
+              '' => '- Any -',
+              1 => 'Active',
+              0 => 'Inactive',
+            ),
+            'type' => CRM_Utils_Type::T_INT,
+          ),
+          'is_valid' => array(
+            'title' => ts('Relationship Dates Validity'),
+            'operatorType' => CRM_Report_Form::OP_SELECT,
+            'options' => array(
+              NULL => ts('- Any -'),
+              1 => ts('Not expired'),
+              0 => ts('Expired'),
+            ),
+            'type' => CRM_Utils_Type::T_INT,
+          ),
+          'relationship_type_id' => array(
+            'title' => ts('Relationship'),
+            'operatorType' => CRM_Report_Form::OP_SELECT,
+            'options' => array(
+              '' => '- any relationship type -',
+            ) +
+            CRM_Contact_BAO_Relationship::getContactRelationshipType(NULL, 'null', NULL, NULL, TRUE),
+            'type' => CRM_Utils_Type::T_INT,
+          ),
+          'start_date' => array(
+            'title' => ts('Start Date'),
+            'type' => CRM_Utils_Type::T_DATE,
+          ),
+          'end_date' => array(
+            'title' => ts('End Date'),
+            'type' => CRM_Utils_Type::T_DATE,
+          ),
+        ),
+        'grouping' => 'relation-fields',
       ),
       'civicrm_note' => array(
         'dao' => 'CRM_Core_DAO_Note',
