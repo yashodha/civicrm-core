@@ -35,6 +35,7 @@
 class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
 
   protected $_summary = NULL;
+  protected $_exposeContactID = FALSE;
   protected $_emailField_a = FALSE;
   protected $_emailField_b = FALSE;
   protected $_phoneField_a = FALSE;
@@ -88,6 +89,67 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         ),
         'grouping' => 'contact_a_fields',
       ),
+      'civicrm_email' => array(
+        'dao' => 'CRM_Core_DAO_Email',
+        'fields' => array(
+          'email_a' => array(
+            'title' => ts('Email (Contact A)'),
+            'name' => 'email',
+          ),
+        ),
+        'grouping' => 'contact_a_fields_2',
+      ),
+      'civicrm_phone' => array(
+        'dao' => 'CRM_Core_DAO_Phone',
+        'alias' => 'phone_a',
+        'fields' => array(
+          'phone_a' => array(
+            'title' => ts('Phone (Contact A)'),
+            'name' => 'phone',
+          ),
+          'phone_ext_a' => array(
+            'title' => ts('Phone Ext (Contact A)'),
+            'name' => 'phone_ext',
+          ),
+        ),
+        'grouping' => 'contact_a_fields_2',
+      ),
+      'civicrm_address' => array(
+        'dao' => 'CRM_Core_DAO_Address',
+        'fields' => array(
+          'city_a' => array(
+            'title' => ts('City (Contact A)'),
+            'name' => 'city',
+          ),
+          'postal_code_a' => array(
+            'title' => ts('Zip (Contact A)'),
+            'name' => 'postal_code',
+          ),
+          'state_province_id_a' => array(
+            'title' => ts('State/Province (Contact A)'),
+            'name' => 'state_province_id',
+          ),
+          'country_id_a' => array(
+            'title' => ts('Country (Contact A)'),
+            'name' => 'country_id',
+          ),
+        ),
+        'filters' => array(
+          'country_id_a' => array(
+            'title' => ts('Country (Contact A)'),
+            'name' => 'country_id',
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::country(),
+          ),
+          'state_province_id_a' => array(
+            'title' => ts('State/Province (Contact A)'),
+            'name' => 'state_province_id',
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Core_PseudoConstant::stateProvince(),
+          ),
+        ),
+        'grouping' => 'contact_a_fields_3',
+      ),
       'civicrm_contact_b' => array(
         'dao' => 'CRM_Contact_DAO_Contact',
         'alias' => 'contact_b',
@@ -128,16 +190,6 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
         ),
         'grouping' => 'contact_b_fields',
       ),
-      'civicrm_email' => array(
-        'dao' => 'CRM_Core_DAO_Email',
-        'fields' => array(
-          'email_a' => array(
-            'title' => ts('Email (Contact A)'),
-            'name' => 'email',
-          ),
-        ),
-        'grouping' => 'contact_a_fields',
-      ),
       'civicrm_email_b' => array(
         'dao' => 'CRM_Core_DAO_Email',
         'alias' => 'email_b',
@@ -147,22 +199,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'name' => 'email',
           ),
         ),
-        'grouping' => 'contact_b_fields2',
-      ),
-      'civicrm_phone' => array(
-        'dao' => 'CRM_Core_DAO_Phone',
-        'alias' => 'phone_a',
-        'fields' => array(
-          'phone_a' => array(
-            'title' => ts('Phone (Contact A)'),
-            'name' => 'phone',
-          ),
-          'phone_ext_a' => array(
-            'title' => ts('Phone Ext (Contact A)'),
-            'name' => 'phone_ext',
-          ),
-        ),
-        'grouping' => 'contact_a_fields',
+        'grouping' => 'contact_b_fields_2',
       ),
       'civicrm_phone_b' => array(
         'dao' => 'CRM_Core_DAO_Phone',
@@ -177,43 +214,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'name' => 'phone_ext',
           ),
         ),
-        'grouping' => 'contact_b_fields2',
-      ),
-      'civicrm_address' => array(
-        'dao' => 'CRM_Core_DAO_Address',
-        'fields' => array(
-          'city_a' => array(
-            'title' => ts('City (Contact A)'),
-            'name' => 'city',
-          ),
-          'postal_code_a' => array(
-            'title' => ts('Zip (Contact A)'),
-            'name' => 'postal_code',
-          ),
-          'state_province_id_a' => array(
-            'title' => ts('State/Province (Contact A)'),
-            'name' => 'state_province_id',
-          ),
-          'country_id_a' => array(
-            'title' => ts('Country (Contact A)'),
-            'name' => 'country_id',
-          ),
-        ),
-        'filters' => array(
-          'country_id_a' => array(
-            'title' => ts('Country (Contact A)'),
-            'name' => 'country_id',
-            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-            'options' => CRM_Core_PseudoConstant::country(),
-          ),
-          'state_province_id_a' => array(
-            'title' => ts('State/Province (Contact A)'),
-            'name' => 'state_province_id',
-            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-            'options' => CRM_Core_PseudoConstant::stateProvince(),
-          ),
-        ),
-        'grouping' => 'contact_a_fields',
+        'grouping' => 'contact_b_fields_2',
       ),
       'civicrm_address_b' => array(
         'dao' => 'CRM_Core_DAO_Address',
@@ -250,7 +251,7 @@ class CRM_Report_Form_Contact_Relationship extends CRM_Report_Form {
             'options' => CRM_Core_PseudoConstant::stateProvince(),
           ),
         ),
-        'grouping' => 'contact_b_fields2',
+        'grouping' => 'contact_b_fields_3',
       ),
       'civicrm_relationship_type' => array(
         'dao' => 'CRM_Contact_DAO_RelationshipType',
