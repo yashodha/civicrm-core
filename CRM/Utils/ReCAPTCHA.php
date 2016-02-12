@@ -83,7 +83,7 @@ class CRM_Utils_ReCAPTCHA {
     if (CRM_Utils_System::isSSL()) {
       $useSSL = TRUE;
     }
-    $html = recaptcha_get_html($config->recaptchaPublicKey, $error, $useSSL);
+    $html = recaptcha_get_html(CRM_Core_BAO_Setting::getItem(CRM_Core_BAO_Setting::SYSTEM_PREFERENCES_NAME, 'recaptchaPublicKey'), $error, $useSSL);
 
     $form->assign('recaptchaHTML', $html);
     $form->assign('recaptchaOptions', $config->recaptchaOptions);
