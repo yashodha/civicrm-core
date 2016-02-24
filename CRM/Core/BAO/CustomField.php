@@ -1712,7 +1712,7 @@ SELECT id
       if (empty($value)) {
         return;
       }
-      if ($value && is_int($value)) {
+      if ($value && is_numeric($value)) {
         // file is already uploaded then get file details
         $fileId = $value;
         $value = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_File', $value, 'uri');
