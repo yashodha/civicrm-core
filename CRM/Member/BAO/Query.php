@@ -401,8 +401,9 @@ class CRM_Member_BAO_Query {
       array('id' => 'membership_status_id', 'multiple' => 'multiple', 'class' => 'crm-select2')
     );
 
-    $form->addSelect('membership_type_id',
-      array('entity' => 'membership', 'multiple' => 'multiple', 'label' => ts('Membership Type(s)'), 'option_url' => NULL, 'placeholder' => ts('- any -'))
+    $membershipTypes = CRM_Member_PseudoConstant::membershipType();
+    $form->add('select', 'membership_type_id', ts('Membership Type(s)'), $membershipTypes, FALSE,
+      array('id' => 'membership_type_id', 'multiple' => 'multiple', 'class' => 'crm-select2', 'placeholder' => ts('- any -'))
     );
 
     $form->addElement('text', 'member_source', ts('Source'));
