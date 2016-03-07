@@ -285,9 +285,11 @@ class CRM_Core_BAO_ConfigSetting {
         if ($lcMessagesRequest) {
           $ufm = new CRM_Core_DAO_UFMatch();
           $ufm->contact_id = $session->get('userID');
-          if ($ufm->find(TRUE)) {
-            $ufm->language = $lcMessages;
-            $ufm->save();
+          if ($session->get('userID') && $ufm->find(TRUE)) {
+            if ($ufm->language != $lcMessages) {
+              $ufm->language = $lcMessages;
+              $ufm->save();
+            }
           }
           $session->set('lcMessages', $lcMessages);
         }
