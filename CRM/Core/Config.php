@@ -496,6 +496,8 @@ class CRM_Core_Config extends CRM_Core_Config_Variables {
       $this->$key = $value;
     }
 
+    CRM_Core_BAO_ConfigSetting::applyLocale();
+
     if ($this->userFrameworkResourceURL) {
       // we need to do this here so all blocks also load from an ssl server
       if (CRM_Utils_System::isSSL()) {

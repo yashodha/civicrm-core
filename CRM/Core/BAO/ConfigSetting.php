@@ -245,98 +245,6 @@ class CRM_Core_BAO_ConfigSetting {
       else {
         $defaults['localeCustomStrings'] = NULL;
       }
-
-      // are we in a multi-language setup?
-      $multiLang = $domain->locales ? TRUE : FALSE;
-
-      // set the current language
-      $lcMessages = NULL;
-
-      $session = CRM_Core_Session::singleton();
-
-      // on multi-lang sites based on request and civicrm_uf_match
-      if ($multiLang) {
-        $lcMessagesRequest = CRM_Utils_Request::retrieve('lcMessages', 'String', $this);
-        $languageLimit = array();
-        if (array_key_exists('languageLimit', $defaults) && is_array($defaults['languageLimit'])) {
-          $languageLimit = $defaults['languageLimit'];
-        }
-
-        if (in_array($lcMessagesRequest, array_keys($languageLimit))) {
-          $lcMessages = $lcMessagesRequest;
-
-          //CRM-8559, cache navigation do not respect locale if it is changed, so reseting cache.
-          CRM_Core_BAO_Cache::deleteGroup('navigation');
-        }
-        else {
-          $lcMessagesRequest = NULL;
-        }
-
-        if (!$lcMessagesRequest) {
-          $lcMessagesSession = $session->get('lcMessages');
-          if (in_array($lcMessagesSession, array_keys($languageLimit))) {
-            $lcMessages = $lcMessagesSession;
-          }
-          else {
-            $lcMessagesSession = NULL;
-          }
-        }
-
-        if ($lcMessagesRequest) {
-          $ufm = new CRM_Core_DAO_UFMatch();
-          $ufm->contact_id = $session->get('userID');
-          if ($session->get('userID') && $ufm->find(TRUE)) {
-            if ($ufm->language != $lcMessages) {
-              $ufm->language = $lcMessages;
-              $ufm->save();
-            }
-          }
-          $session->set('lcMessages', $lcMessages);
-        }
-
-        if (!$lcMessages and $session->get('userID')) {
-          $ufm = new CRM_Core_DAO_UFMatch();
-          $ufm->contact_id = $session->get('userID');
-          if ($ufm->find(TRUE) &&
-            in_array($ufm->language, array_keys($languageLimit))
-          ) {
-            $lcMessages = $ufm->language;
-          }
-          $session->set('lcMessages', $lcMessages);
-        }
-      }
-      global $dbLocale;
-
-      // try to inherit the language from the hosting CMS
-      if (!empty($defaults['inheritLocale'])) {
-        // FIXME: On multilanguage installs, CRM_Utils_System::getUFLocale() in many cases returns nothing if $dbLocale is not set
-        $dbLocale = $multiLang ? "_{$defaults['lcMessages']}" : '';
-        $lcMessages = CRM_Utils_System::getUFLocale();
-        if ($domain->locales and !in_array($lcMessages, explode(CRM_Core_DAO::VALUE_SEPARATOR,
-            $domain->locales
-          ))
-        ) {
-          $lcMessages = NULL;
-        }
-      }
-
-      if (empty($lcMessages)) {
-        //CRM-11993 - if a single-lang site, use default
-        $lcMessages = CRM_Utils_Array::value('lcMessages', $defaults);
-      }
-
-      // set suffix for table names - use views if more than one language
-      $dbLocale = $multiLang ? "_{$lcMessages}" : '';
-
-      // FIXME: an ugly hack to fix CRM-4041
-      global $tsLocale;
-      $tsLocale = $lcMessages;
-
-      // FIXME: as bad aplace as any to fix CRM-5428
-      // (to be moved to a sane location along with the above)
-      if (function_exists('mb_internal_encoding')) {
-        mb_internal_encoding('UTF-8');
-      }
     }
 
     // dont add if its empty
@@ -360,6 +268,112 @@ class CRM_Core_BAO_ConfigSetting {
       }
     }
   }
+  
+  
+  /**
+   * Evaluate locale preferences and activate a chosen locale by
+   * updating session+global variables.
+   */
+  public static function applyLocale() {
+    $domain = CRM_Core_BAO_Domain::getDomain();
+    $defaults = unserialize($domain->config_backend);
+    if ($defaults === FALSE || !is_array($defaults)) {
+      $defaults = array();
+      return FALSE;
+    }
+    // are we in a multi-language setup?
+    $multiLang = $domain->locales ? TRUE : FALSE;
+
+    // set the current language
+    $lcMessages = NULL;
+
+    $session = CRM_Core_Session::singleton();
+
+    // on multi-lang sites based on request and civicrm_uf_match
+    if ($multiLang) {
+      $lcMessagesRequest = CRM_Utils_Request::retrieve('lcMessages', 'String');
+      $languageLimit = array();
+      if (array_key_exists('languageLimit', $defaults) && is_array($defaults['languageLimit'])) {
+        $languageLimit = $defaults['languageLimit'];
+      }
+
+      if (in_array($lcMessagesRequest, array_keys($languageLimit))) {
+        $lcMessages = $lcMessagesRequest;
+
+        //CRM-8559, cache navigation do not respect locale if it is changed, so reseting cache.
+        CRM_Core_BAO_Cache::deleteGroup('navigation');
+      }
+      else {
+        $lcMessagesRequest = NULL;
+      }
+
+      if (!$lcMessagesRequest) {
+        $lcMessagesSession = $session->get('lcMessages');
+        if (in_array($lcMessagesSession, array_keys($languageLimit))) {
+          $lcMessages = $lcMessagesSession;
+        }
+        else {
+          $lcMessagesSession = NULL;
+        }
+      }
+
+      if ($lcMessagesRequest) {
+        $ufm = new CRM_Core_DAO_UFMatch();
+        $ufm->contact_id = $session->get('userID');
+        if ($session->get('userID') && $ufm->find(TRUE)) {
+          if ($ufm->language != $lcMessages) {
+            $ufm->language = $lcMessages;
+            $ufm->save();
+          }
+        }
+        $session->set('lcMessages', $lcMessages);
+      }
+
+      if (!$lcMessages and $session->get('userID')) {
+        $ufm = new CRM_Core_DAO_UFMatch();
+        $ufm->contact_id = $session->get('userID');
+        if ($ufm->find(TRUE) &&
+          in_array($ufm->language, array_keys($languageLimit))
+        ) {
+          $lcMessages = $ufm->language;
+        }
+        $session->set('lcMessages', $lcMessages);
+      }
+    }
+    global $dbLocale;
+
+    // try to inherit the language from the hosting CMS
+    if (!empty($defaults['inheritLocale'])) {
+      // FIXME: On multilanguage installs, CRM_Utils_System::getUFLocale() in many cases returns nothing if $dbLocale is not set
+      $dbLocale = $multiLang ? "_{$defaults['lcMessages']}" : '';
+      $lcMessages = CRM_Utils_System::getUFLocale();
+      if ($domain->locales and !in_array($lcMessages, explode(CRM_Core_DAO::VALUE_SEPARATOR,
+          $domain->locales
+        ))
+      ) {
+        $lcMessages = NULL;
+      }
+    }
+
+    if (empty($lcMessages)) {
+      //CRM-11993 - if a single-lang site, use default
+      $lcMessages = CRM_Utils_Array::value('lcMessages', $defaults);
+    }
+
+    // set suffix for table names - use views if more than one language
+    $dbLocale = $multiLang ? "_{$lcMessages}" : '';
+
+    // FIXME: an ugly hack to fix CRM-4041
+    global $tsLocale;
+    $tsLocale = $lcMessages;
+
+    // FIXME: as bad aplace as any to fix CRM-5428
+    // (to be moved to a sane location along with the above)
+    if (function_exists('mb_internal_encoding')) {
+      mb_internal_encoding('UTF-8');
+    }
+  }
+
 
   /**
    * @return array
