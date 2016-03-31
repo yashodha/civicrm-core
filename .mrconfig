@@ -1,0 +1,9 @@
+[.]
+# Clean-up after each update
+# fixups = pushd $MR_REPO ; sh ../itbliss/civicrm_cleanup.sh ; popd
+
+[packages]
+checkout = git clone -b 4.6 'https://github.com/civicrm/civicrm-packages.git' 'packages'
+
+[drupal]
+checkout = git clone 'https://github.com/civicrm/civicrm-drupal.git' 'drupal' && cd drupal; git checkout 7.x-4.6
