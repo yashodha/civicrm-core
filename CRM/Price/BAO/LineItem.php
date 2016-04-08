@@ -69,11 +69,11 @@ class CRM_Price_BAO_LineItem extends CRM_Price_DAO_LineItem {
     }
 
     $uniqueValues = array_flip(array('entity_table' ,'entity_id','contribution_id' ,'price_field_value_id' ,'price_field_id'));
-    $lineItemBAOCheckDuplicate = new CRM_Price_BAO_LineItem();
+    $lineItemBAO = new CRM_Price_BAO_LineItem();
     $uniqueValues = array_intersect_key($params, $uniqueValues);
-    $lineItemBAOCheckDuplicate->copyValues($uniqueValues);
-    if ($lineItemBAOCheckDuplicate->find(TRUE)) {
-      $return =  $lineItemBAOCheckDuplicate;
+    $lineItemBAO->copyValues($uniqueValues);
+    if ($lineItemBAO->find(TRUE)) {
+      $return =  $lineItemBAO;
     }
     else {
       $lineItemBAO = new CRM_Price_BAO_LineItem();
