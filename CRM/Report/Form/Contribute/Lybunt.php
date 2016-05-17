@@ -424,6 +424,7 @@ class CRM_Report_Form_Contribute_Lybunt extends CRM_Report_Form {
     $this->buildACLClause($this->_aliases['civicrm_contact']);
     $this->select();
     $this->from();
+    $this->customDataFrom();
     $this->where();
     $this->groupBy();
 
