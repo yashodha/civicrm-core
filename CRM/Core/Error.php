@@ -905,6 +905,24 @@ class CRM_Core_Error extends PEAR_ErrorStack {
    * @throws PEAR_Exception
    */
   public static function exceptionHandler($pearError) {
+    $config = CRM_Core_Config::singleton(true, true); // refresh config object, we have to overwrite cron job default handler
+    // create the error array
+    $error = array();
+    $error['callback'] = $pearError->getCallback();
+    $error['code'] = $pearError->getCode();
+    $error['message'] = $pearError->getMessage();
+    $error['mode'] = $pearError->getMode();
+    $error['debug_info'] = $pearError->getDebugInfo();
+    $error['type'] = $pearError->getType();
+    $error['user_info'] = $pearError->getUserInfo();
+    $error['to_string'] = $pearError->toString();
+    if ($config->fatalErrorHandler &&
+      function_exists($config->fatalErrorHandler)
+    ) {
+      $name = $config->fatalErrorHandler;
+      $ret = $name($error);
+    }
+    CRM_Core_Error::debug_var('Fatal Error Details', $error);
     CRM_Core_Error::backtrace('backTrace', TRUE);
     throw new PEAR_Exception($pearError->getMessage(), $pearError);
   }
