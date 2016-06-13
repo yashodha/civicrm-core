@@ -3,7 +3,7 @@
  +--------------------------------------------------------------------+
  | CiviCRM version 4.6                                                |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2015                                |
+ | Copyright CiviCRM LLC (c) 2004-2016                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -26,60 +26,37 @@
  */
 
 /**
- * This api exposes CiviCRM option groups.
+ * Just another collection of static utils functions.
  *
- * OptionGroups are containers for option values.
- *
- * @package CiviCRM_APIv3
+ * @package CRM
+ * @copyright CiviCRM LLC (c) 2004-2016
  */
+class CRM_Utils_SQL {
 
-/**
- * Get option groups.
- *
- * @param array $params
- *
- * @return array
- */
-function civicrm_api3_option_group_get($params) {
-  return _civicrm_api3_basic_get(_civicrm_api3_get_BAO(__FUNCTION__), $params);
-}
+  /**
+   * Helper function for adding the permissioned subquery from one entity onto another
+   *
+   * @param string $entity
+   * @param string $joinColumn
+   * @return array
+   */
+  public static function mergeSubquery($entity, $joinColumn = 'id') {
+    require_once 'api/v3/utils.php';
+    $baoName = _civicrm_api3_get_BAO($entity);
+    $bao = new $baoName();
+    $clauses = $subclauses = array();
+    foreach ((array) $bao->addSelectWhereClause() as $field => $vals) {
+      if ($vals && $field == $joinColumn) {
+        $clauses = array_merge($clauses, (array) $vals);
+      }
+      elseif ($vals) {
+        $subclauses[] = "$field " . implode(" AND $field ", (array) $vals);
+      }
+    }
+    if ($subclauses) {
+      $clauses[] = "IN (SELECT `$joinColumn` FROM `" . $bao->tableName() . "` WHERE " . implode(' AND ', $subclauses) . ")";
+    }
+    return $clauses;
+  }
 
-/**
- * Create/update option group.
- *
- * @param array $params
- *   Array per getfields metadata.
- *
- * @return array
- */
-function civicrm_api3_option_group_create($params) {
-  return _civicrm_api3_basic_create(_civicrm_api3_get_BAO(__FUNCTION__), $params);
-}
-
-/**
- * Adjust Metadata for Create action.
- *
- * The metadata is used for setting defaults, documentation & validation.
- *
- * @param array $params
- *   Array of parameters determined by getfields.
- */
-function _civicrm_api3_option_group_create_spec(&$params) {
-  $params['name']['api.unique'] = 1;
-  $params['is_active']['api.default'] = TRUE;
-}
-
-/**
- * Delete an existing Option Group.
- *
- * This method is used to delete any existing OptionGroup given its id.
- *
- * @param array $params
- *   [id]
- *
- * @return array
- *   API Result Array
- */
-function civicrm_api3_option_group_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
 }

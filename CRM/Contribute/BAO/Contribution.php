@@ -2536,7 +2536,7 @@ WHERE  contribution_id = %1 ";
 
     $template->assign('trxn_id', $this->trxn_id);
     $template->assign('receive_date',
-      CRM_Utils_Date::mysqlToIso($this->receive_date)
+      CRM_Utils_Date::processDate($this->receive_date)
     );
     $template->assign('contributeMode', 'notify');
     $template->assign('action', $this->is_test ? 1024 : 1);
@@ -3800,10 +3800,8 @@ WHERE con.id = {$contributionId}
     do {
       $creditNoteNum++;
       $creditNoteId = CRM_Utils_Array::value('credit_notes_prefix', $prefixValue) . "" . $creditNoteNum;
-      $result = civicrm_api3('Contribution', 'getcount', array(
-        'sequential' => 1,
-        'creditnote_id' => $creditNoteId,
-      ));
+      $params = array(1 => array($creditNoteId, 'String'));
+      $result = CRM_Core_DAO::singleValueQuery("SELECT count(id) FROM civicrm_contribution WHERE creditnote_id = %1", $params);
     } while ($result > 0);
 
     return $creditNoteId;

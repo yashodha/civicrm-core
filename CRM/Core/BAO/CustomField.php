@@ -1721,46 +1721,53 @@ SELECT id
       if (empty($value)) {
         return;
       }
-      if ($value && is_numeric($value)) {
-        // file is already uploaded then get file details
-        $fileId = $value;
-        $value = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_File', $value, 'uri');
-      }
-      else {
-        $config = CRM_Core_Config::singleton();
 
-        $fName = $value['name'];
-        $mimeType = $value['type'];
+      $config = CRM_Core_Config::singleton();
 
-        $filename = pathinfo($fName, PATHINFO_BASENAME);
+      $fName = $value['name'];
+      $mimeType = $value['type'];
 
-        // rename this file to go into the secure directory
-        if (!rename($fName, $config->customFileUploadDir . $filename)) {
-          CRM_Core_Error::statusBounce(ts('Could not move custom file to custom upload directory'));
-        }
-
-        if ($customValueId) {
-          $query = "
-  SELECT $columnName
-    FROM $tableName
-   WHERE id = %1";
-          $params = array(1 => array($customValueId, 'Integer'));
-          $fileId = CRM_Core_DAO::singleValueQuery($query, $params);
-        }
-
+      // If we are already passing the file id as a value then retrieve and set the file data
+      if (CRM_Utils_Rule::integer($value)) {
         $fileDAO = new CRM_Core_DAO_File();
-
-        if ($fileId) {
-          $fileDAO->id = $fileId;
+        $fileDAO->id = $value;
+        $fileDAO->find(TRUE);
+        if ($fileDAO->N) {
+          $fileID = $value;
+          $fName = $fileDAO->uri;
+          $mimeType = $fileDAO->mime_type;
         }
-
-        $fileDAO->uri = $filename;
-        $fileDAO->mime_type = $mimeType;
-        $fileDAO->upload_date = date('Ymdhis');
-        $fileDAO->save();
-        $fileId = $fileDAO->id;
-        $value = $filename;
       }
+
+      $filename = pathinfo($fName, PATHINFO_BASENAME);
+
+      // rename this file to go into the secure directory only if
+      // user has uploaded new file not existing verfied on the basis of $fileID
+      if (empty($fileID) && !rename($fName, $config->customFileUploadDir . $filename)) {
+        CRM_Core_Error::statusBounce(ts('Could not move custom file to custom upload directory'));
+      }
+
+      if ($customValueId && empty($fileID)) {
+        $query = "
+SELECT $columnName
+  FROM $tableName
+ WHERE id = %1";
+        $params = array(1 => array($customValueId, 'Integer'));
+        $fileId = CRM_Core_DAO::singleValueQuery($query, $params);
+      }
+
+      $fileDAO = new CRM_Core_DAO_File();
+
+      if ($fileId) {
+        $fileDAO->id = $fileId;
+      }
+
+      $fileDAO->uri = $filename;
+      $fileDAO->mime_type = $mimeType;
+      $fileDAO->upload_date = date('Ymdhis');
+      $fileDAO->save();
+      $fileId = $fileDAO->id;
+      $value = $filename;
     }
 
     if (!is_array($customFormatted)) {
