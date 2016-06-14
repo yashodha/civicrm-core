@@ -4046,16 +4046,21 @@ WHERE  $smartGroupClause
       }
     }
 
+    $contactAlias = 'contact_b';
+    if (self::$_relationshipTempTable) {
+      $contactAlias = 'contact_a';
+    }
+
     //check to see if the target contact is in specified group
     if ($targetGroup) {
       //add contacts from static groups
       $this->_tables['civicrm_relationship_group_contact'] = $this->_whereTables['civicrm_relationship_group_contact']
-        = " LEFT JOIN civicrm_group_contact civicrm_relationship_group_contact ON civicrm_relationship_group_contact.contact_id = contact_b.id AND civicrm_relationship_group_contact.status = 'Added'";
+        = " LEFT JOIN civicrm_group_contact civicrm_relationship_group_contact ON civicrm_relationship_group_contact.contact_id = {$contactAlias}.id AND civicrm_relationship_group_contact.status = 'Added'";
       $groupWhere[] = "( civicrm_relationship_group_contact.group_id IN  (" .
         implode(",", $targetGroup[2]) . ") ) ";
 
       //add contacts from saved searches
-      $ssWhere = $this->addGroupContactCache($targetGroup[2], "civicrm_relationship_group_contact_cache", "contact_b", $op);
+      $ssWhere = $this->addGroupContactCache($targetGroup[2], "civicrm_relationship_group_contact_cache", $contactAlias, $op);
 
       //set the group where clause
       if ($ssWhere) {
@@ -4103,7 +4108,7 @@ civicrm_relationship.start_date > {$today}
     if (in_array(array('deleted_contacts', '=', '1', '0', '0'), $this->_params)) {
       $onlyDeleted = 1;
     }
-    $where[$grouping][] = "(contact_b.is_deleted = {$onlyDeleted})";
+    $where[$grouping][] = "({$contactAlias}.is_deleted = {$onlyDeleted})";
 
     //check for permissioned, non-permissioned and all permissioned relations
     if ($relPermission[2] == 1) {
@@ -4136,16 +4141,16 @@ civicrm_relationship.is_permission_a_b = 0
       $whereClause = '';
       if (!empty($where[$grouping])) {
         $whereClause = ' WHERE ' . implode(' AND ', $where[$grouping]);
-        $whereClause = str_replace('contact_b', 'c', $whereClause);
+        $whereClause = str_replace($contactAlias, 'c', $whereClause);
       }
       $sql = "
         CREATE TEMPORARY TABLE {$relationshipTempTable}
-          (SELECT contact_id_b as contact_id, civicrm_relationship.id
+          (SELECT contact_id_b as contact_id, civicrm_relationship.id, is_active, start_date, end_date, is_permission_a_b, relationship_type_id
             FROM civicrm_relationship
             INNER JOIN  civicrm_contact c ON civicrm_relationship.contact_id_a = c.id
             $whereClause )
           UNION
-            (SELECT contact_id_a as contact_id, civicrm_relationship.id
+            (SELECT contact_id_a as contact_id, civicrm_relationship.id, is_active, start_date, end_date, is_permission_a_b, relationship_type_id
             FROM civicrm_relationship
             INNER JOIN civicrm_contact c ON civicrm_relationship.contact_id_b = c.id
             $whereClause )
