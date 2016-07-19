@@ -714,7 +714,6 @@ WHERE   id IN ( ' . implode(' , ', array_keys($membershipType)) . ' )';
           $li['financial_type_id'] = $submittedFinancialType;
         }
       }
-      $formValues['total_amount'] = CRM_Utils_Array::value('amount', $this->_params);
       if (!empty($lineItem)) {
         $formValues['lineItems'] = $lineItem;
         $formValues['processPriceSet'] = TRUE;
