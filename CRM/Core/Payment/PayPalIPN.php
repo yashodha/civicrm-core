@@ -334,7 +334,10 @@ class CRM_Core_Payment_PayPalIPN extends CRM_Core_Payment_BaseIPN {
     }
 
     $processorParams = array(
-      'user_name' => $this->retrieve('receiver_email', 'String', FALSE),
+      // receiver_email and business most of the time are same, if differ then use 'business'
+      // business email stored in payment processor table
+      // https://developer.paypal.com/docs/classic/ipn/integration-guide/IPNandPDTVariables/
+      'user_name' => $this->retrieve('business', 'String', FALSE),
       'payment_processor_type_id' => CRM_Core_DAO::getFieldValue('CRM_Financial_DAO_PaymentProcessorType', 'PayPal_Standard', 'id', 'name'),
       'is_test' => empty($input['is_test']) ? 0 : 1,
     );
