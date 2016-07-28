@@ -62,9 +62,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
   static $_properties = array(
     'contact_id',
     'contact_type',
-    'sort_name',
-    'current_employer',     // NG: Added for FBG AD
-    'current_employer_id',  // NG: for the link to    
+    'sort_name',  
     'event_id',
     'participant_status_id',
     'event_title',
@@ -492,13 +490,7 @@ class CRM_Event_Selector_Search extends CRM_Core_Selector_Base implements CRM_Co
             'name' => ts('Participant'),
             'sort' => 'sort_name',
             'direction' => CRM_Utils_Sort::DONTCARE,
-          ),
-          // NG: Added for FBG AD
-          array( 
-            'name' => ts('Employer'), 
-            'sort' => 'current_employer', 
-            'direction' => CRM_Utils_Sort::DONTCARE,
-          ),           
+          ),          
         );
         self::$_columnHeaders = array_merge($pre, self::$_columnHeaders);
       }
