@@ -3516,21 +3516,17 @@ WHERE  $smartGroupClause
 
     list($name, $op, $value, $grouping, $wildcard) = $values;
 
-    // Handle numeric postal code range searches properly by casting the column as numeric
-    if (is_numeric($value)) {
-      $field = 'ROUND(civicrm_address.postal_code)';
-      $val = CRM_Utils_Type::escape($value, 'Integer');
+    // CRM-17060: We might be looking at an 'IN' syntax so don't cast arrays to string.
+    if (!is_array($value)) {
+      // CRM-14720: Handle postal code range searches properly as postal code is NOT a numeric.
+      $length = mb_strlen($value);
+      $field = "LEFT(civicrm_address.postal_code, $length)";
+      $val = CRM_Utils_Type::escape($value, 'String');
     }
     else {
+      // Do we need to escape values here? I would expect buildClause does.
       $field = 'civicrm_address.postal_code';
-      // Per CRM-17060 we might be looking at an 'IN' syntax so don't case arrays to string.
-      if (!is_array($value)) {
-        $val = CRM_Utils_Type::escape($value, 'String');
-      }
-      else {
-        // Do we need to escape values here? I would expect buildClause does.
-        $val = $value;
-      }
+      $val = $value;
     }
 
     $this->_tables['civicrm_address'] = $this->_whereTables['civicrm_address'] = 1;
