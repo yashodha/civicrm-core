@@ -3520,7 +3520,7 @@ WHERE  $smartGroupClause
     if (!is_array($value)) {
       // CRM-14720: Handle postal code range searches properly as postal code is NOT a numeric.
       $length = mb_strlen($value);
-      $field = "LEFT(civicrm_address.postal_code, $length)";
+      $field = "LENGTH(civicrm_address.postal_code) >= $length AND LEFT(civicrm_address.postal_code, $length)";
       $val = CRM_Utils_Type::escape($value, 'String');
     }
     else {

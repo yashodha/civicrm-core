@@ -167,8 +167,8 @@ LEFT JOIN civicrm_email   email   ON ( email.contact_id = contact_a.id AND
         )
       );
     }
-
-    $where = "LEFT(address.postal_code, $low_length) >= %1 AND LEFT(address.postal_code, $high_length) <= %2";
+    $min_length = min($low_length, $high_length);
+    $where = "LENGTH(address.postal_code) >= $min_length AND LEFT(address.postal_code, $low_length) >= %1 AND LEFT(address.postal_code, $high_length) <= %2";
     $params = array(
       1 => array(trim($low), 'String'),
       2 => array(trim($high), 'String'),
