@@ -436,6 +436,12 @@ class CRM_Contribute_BAO_Contribution extends CRM_Contribute_DAO_Contribution {
         if (empty($softParam['amount'])) {
           $softParam['amount'] = $contribution->total_amount;
         }
+          // @TODO : this is hack and need fix
+          // webform configured with honor, total amount is empty and soft contribution not created with empty amount
+          if (!empty($_SERVER['DOMAIN']) && $_SERVER['DOMAIN'] == 'dbg' && empty($softParam['amount']) && $contribution->id) {
+            $softParam['amount'] = CRM_Core_DAO::getFieldValue('CRM_Contribute_DAO_Contribution', $contribution->id, 'total_amount');
+          }
+
         CRM_Contribute_BAO_ContributionSoft::add($softParam);
       }
 
