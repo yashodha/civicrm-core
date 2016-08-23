@@ -538,6 +538,7 @@ class CRM_Contact_BAO_Relationship extends CRM_Contact_DAO_Relationship {
       $relationship = new CRM_Contact_DAO_Relationship();
       $relationship->id = $relationshipId;
       if ($relationship->find(TRUE)) {
+        $relationshipTypeID = $relationship->relationship_type_id;
         $contact = new CRM_Contact_DAO_Contact();
         $contact->id = ($relationship->contact_id_a === $contactId) ? $relationship->contact_id_b : $relationship->contact_id_a;
 
@@ -598,6 +599,16 @@ class CRM_Contact_BAO_Relationship extends CRM_Contact_DAO_Relationship {
       // lets clean up the data and eliminate all duplicate values
       // (i.e. the relationship is bi-directional)
       $relationshipType = array_unique($relationshipType);
+      if (!empty($relationshipTypeID) && !empty($contactSuffix)) {
+        $key = $relationshipTypeID . '_' .  $contactSuffix;
+        if (!array_key_exists($key, $relationshipType)) {
+          $needle = $relationshipTypeID . '_' .  strrev($contactSuffix);
+          if ($val = CRM_Utils_Array::value($needle, $relationshipType)) {
+            $relationshipType[$key] = $val;
+            unset($relationshipType[$needle]);
+          }
+        }
+      }
     }
 
     // sort the relationshipType in ascending order CRM-7736
