@@ -40,7 +40,8 @@ class CRM_Admin_Form_LocationType extends CRM_Admin_Form {
    * Build the form object.
    */
   public function buildQuickForm() {
-    parent::buildQuickForm();
+
+     parent::buildQuickForm();
     $this->setPageTitle(ts('Location Type'));
 
     if ($this->_action & CRM_Core_Action::DELETE) {
