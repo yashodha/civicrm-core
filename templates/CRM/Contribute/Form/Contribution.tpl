@@ -500,8 +500,7 @@
       });
 
       function showHideCancelInfo(obj) {
-        var cancelInfo_show_ids = [{/literal}{$cancelInfo_show_ids}{literal}];
-        if (cancelInfo_show_ids.indexOf(obj.val()) > -1) {
+        if (obj.find(":selected").text() == 'Refunded' || obj.find(":selected").text() == 'Cancelled') {
           $('#cancelInfo').show( );
           $('#total_amount').attr('readonly', true);
         }
