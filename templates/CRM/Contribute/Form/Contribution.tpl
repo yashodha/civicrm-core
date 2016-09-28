@@ -512,7 +512,7 @@
           $("#total_amount").removeAttr('readonly');
         }
       }
-     );
+     });
 
     {/literal}{/if}{literal}
     </script>
