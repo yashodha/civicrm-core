@@ -164,7 +164,7 @@ class CRM_Utils_Mail {
 
     // Mail_smtp and Mail_sendmail mailers require Bcc anc Cc emails
     // be included in both $to and $headers['Cc', 'Bcc']
-    if (get_class($mailer) != "Mail_mail") {
+    if (in_array(get_class($mailer), array('Mail_smtp', 'Mail_sendmail'))) {
       //get emails from headers, since these are
       //combination of name and email addresses.
       if (!empty($headers['Cc'])) {
