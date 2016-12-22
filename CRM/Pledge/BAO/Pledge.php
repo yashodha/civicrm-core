@@ -976,11 +976,13 @@ SELECT  pledge.contact_id              as contact_id,
 
         if (empty($details['reminder_date'])) {
           $nextReminderDate = new DateTime($details['scheduled_date']);
+          $details['initial_reminder_day'] = empty($details['initial_reminder_day']) ? 0 : $details['initial_reminder_day'];
           $nextReminderDate->modify("-" . $details['initial_reminder_day'] . "day");
           $nextReminderDate = $nextReminderDate->format("Ymd");
         }
         else {
           $nextReminderDate = new DateTime($details['reminder_date']);
+          $details['additional_reminder_day'] = empty($details['additional_reminder_day']) ? 0 : $details['additional_reminder_day'];
           $nextReminderDate->modify("+" . $details['additional_reminder_day'] . "day");
           $nextReminderDate = $nextReminderDate->format("Ymd");
         }
@@ -1046,8 +1048,11 @@ SELECT  pledge.contact_id              as contact_id,
                 'status_id' => 2,
                 'campaign_id' => $details['campaign_id'],
               );
-              if (is_a(civicrm_api('activity', 'create', $activityParams), 'CRM_Core_Error')) {
-                $returnMessages[] = "Failed creating Activity for acknowledgment";
+              try {
+                civicrm_api3('activity', 'create', $activityParams);
+              }
+              catch (CiviCRM_API3_Exception $e) {
+                $returnMessages[] = "Failed creating Activity for Pledge Reminder: " . $e->getMessage();
                 return array('is_error' => 1, 'message' => $returnMessages);
               }
               $returnMessages[] = "Payment reminder sent to: {$pledgerName} - {$toEmail}";
