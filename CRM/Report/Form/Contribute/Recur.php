@@ -59,16 +59,14 @@ class CRM_Report_Form_Contribute_Recur extends CRM_Report_Form {
             'title' => ts("Last name, First name"),
           ),
         ),
-        'fields' => array(
-          'sort_name' => array(
-            'title' => ts('Contact Name'),
-            'no_repeat' => TRUE,
-            'default' => TRUE,
-          ),
-          'id' => array(
-            'no_display' => TRUE,
-            'required' => TRUE,
-          ),
+        'fields' => array_merge(
+          $this->getBasicContactFields(),
+          array(
+            'sort_name' => array(
+              'title' => ts('Contact Name'),
+              'no_repeat' => TRUE,
+            ),
+          )
         ),
       ),
       'civicrm_email' => array(
