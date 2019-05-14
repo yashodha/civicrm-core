@@ -133,6 +133,9 @@ class CRM_Report_Form_Contribute_Summary extends CRM_Report_Form {
             'required' => TRUE,
             'no_display' => TRUE,
           ),
+          'contribution_page_id' => array(
+            'title' => ts('Contribution Page'),
+          ),
           'total_amount' => array(
             'title' => ts('Contribution Amount Stats'),
             'default' => TRUE,
@@ -157,6 +160,13 @@ class CRM_Report_Form_Contribute_Summary extends CRM_Report_Form {
             'default' => array(1),
             'type' => CRM_Utils_Type::T_INT,
           ),
+	  'contribution_page_id' => array(
+            'title' => ts('Contribution Page'),
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Contribute_PseudoConstant::contributionPage(),
+            'type' => CRM_Utils_Type::T_INT,
+          ),
+
           'currency' => array(
             'title' => ts('Currency'),
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
@@ -213,6 +223,12 @@ class CRM_Report_Form_Contribute_Summary extends CRM_Report_Form {
             'operatorType' => CRM_Report_Form::OP_MULTISELECT,
             'options' => CRM_Contribute_PseudoConstant::contributionStatus(),
             'default' => array(1),
+            'type' => CRM_Utils_Type::T_INT,
+          ),
+	  'contribution_page_id' => array(
+            'title' => ts('Contribution Page'),
+            'operatorType' => CRM_Report_Form::OP_MULTISELECT,
+            'options' => CRM_Contribute_PseudoConstant::contributionPage(),
             'type' => CRM_Utils_Type::T_INT,
           ),
         ),
