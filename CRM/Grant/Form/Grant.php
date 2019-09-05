@@ -225,7 +225,7 @@ class CRM_Grant_Form_Grant extends CRM_Core_Form {
     ]);
 
     $contactField = $this->addEntityRef('contact_id', ts('Applicant'), ['create' => TRUE], TRUE);
-    if ($this->_context != 'standalone') {
+    if ($this->_action & CRM_Core_Action::UPDATE) {
       $contactField->freeze();
     }
   }
